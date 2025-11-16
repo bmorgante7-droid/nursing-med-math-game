@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nursing Med Math Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: #f3f5f9;
+      color: #111827;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 960px;
+      width: 100%;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.7rem;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e5f1ff;
+      color: #1d4ed8;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-right: 6px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .score {
+      text-align: right;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .score strong {
+      font-size: 1.1rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .col {
+      flex: 1 1 250px;
+      min-width: 0;
+    }
+
+    .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .patient-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .patient-meta {
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .order-main {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .order-meta {
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .stock-desc {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .stock-sub {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input[type="number"]:focus,
+    input[type="text"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+
+    .input-group {
+      margin-bottom: 10px;
+    }
+
+    .input-inline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      border-radius: 999px;
+      padding: 8px 14px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .feedback {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .feedback.correct {
+      background: #ecfdf3;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .feedback.partial {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fed7aa;
+    }
+
+    .feedback.error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    /* Tablet tray visuals */
+    .tablet-tray {
+      border-radius: 14px;
+      border: 1px dashed #d1d5db;
+      padding: 8px;
+      margin-top: 8px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: #f9fafb;
+    }
+
+    .tablet {
+      width: 26px;
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid #9ca3af;
+      background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+      position: relative;
+    }
+
+    .tablet::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 2px;
+      bottom: 2px;
+      width: 1px;
+      background: #d1d5db;
+      transform: translateX(-50%);
+    }
+
+    .tray-label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .tray-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .pill-counter {
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .pill-stepper button {
+      min-width: 30px;
+      justify-content: center;
+      padding-inline: 0;
+    }
+
+    /* Syringe visuals */
+    .syringe-wrap {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 14px;
+      border: 1px dashed #d1d5db;
+      background: #f9fafb;
+    }
+
+    .syringe-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .syringe-body {
+      position: relative;
+      height: 72px;
+      width: 220px;
+      border-radius: 999px;
+      border: 1px solid #9ca3af;
+      background: #f9fafb;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding-inline: 10px;
+      box-sizing: border-box;
+    }
+
+    .syringe-liquid {
+      height: 50%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #bfdbfe 0%, #93c5fd 100%);
+      transition: width 0.2s ease-out;
+    }
+
+    .syringe-ticks {
+      position: absolute;
+      inset: 12px 10px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .tick {
+      width: 1px;
+      background: #9ca3af;
+      height: 10px;
+      align-self: flex-start;
+    }
+
+    .syringe-meta {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .range-row {
+      margin-top: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .small {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: right;
+    }
+
+    @media (max-width: 700px) {
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .score {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <div class="header-row">
+        <div>
+          <h1>Nursing Med Math Game</h1>
+          <p class="subtitle">
+            Calculate the correct dose, then visually prepare it with tablets or a syringe.
+          </p>
+          <span class="pill">Mode: Practice</span>
+          <span class="pill" id="questionIndexPill">Question 1</span>
+        </div>
+        <div class="score">
+          <div>Score</div>
+          <div><strong id="scoreValue">0</strong> pts</div>
+          <div id="accuracyValue">Accuracy: 0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient & order -->
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <div class="label">Patient</div>
+          <div class="patient-name" id="patientName">—</div>
+          <div class="patient-meta" id="patientMeta">—</div>
+        </div>
+        <div class="col">
+          <div class="label">Doctor's Order</div>
+          <div class="order-main" id="orderMain">—</div>
+          <div class="order-meta" id="orderMeta">—</div>
+        </div>
+        <div class="col">
+          <div class="label">Available Medication</div>
+          <div class="stock-desc" id="stockDesc">—</div>
+          <div class="stock-sub" id="stockSub">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculation & visual prep -->
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <div class="label">Step 1 · Calculate the dose</div>
+          <div class="input-group">
+            <label class="input-inline">
+              Required dose:
+              <span id="calcUnitLabel">units</span>
+            </label>
+            <input
+              id="doseInput"
+              type="number"
+              step="0.01"
+              placeholder="e.g., 2 for tablets or 0.8 for mL"
+            />
+          </div>
+          <div class="small">
+            Hint (optional):
+            <br />
+            For tablets:
+            <code>tabs = ordered mg ÷ mg per tablet</code>
+            <br />
+            For liquids:
+            <code>mL = ordered mg ÷ mg per mL</code>
+            <br />
+            For mcg doses, convert to mg:
+            <code>mg = mcg ÷ 1000</code>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="label">Step 2 · Prepare the medication</div>
+          <div id="visualContainer">
+            <!-- filled dynamically based on problem type -->
+          </div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-primary" id="submitBtn">
+          ✅ Administer Dose
+        </button>
+        <button class="btn-secondary" id="showAnswerBtn">
+          💡 Show Correct Dose
+        </button>
+        <button class="btn-ghost" id="nextBtn" disabled>
+          ➡️ Next Question
+        </button>
+      </div>
+
+      <div id="feedback" class="feedback" style="display: none;"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Your running progress</div>
+      <div class="small">
+        • Full credit for an accurate dose and matching visual prep.<br />
+        • Partial credit for small errors that are not dangerously off.<br />
+        • No credit for unsafe overdoses/underdoses or mismatched entries.
+      </div>
+      <div class="footer-note">
+        Tip: You can expand this set of questions or tune difficulty as your
+        course progresses.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Problem bank (14 questions)
+    // -----------------------------
+    const problems = [
+      // 1: tablets, mg
+      {
+        id: 1,
+        type: "tablet",
+        patient: { name: "John Smith", age: 45, weightKg: 82 },
+        order: {
+          drug: "Acetaminophen",
+          doseMg: 650,
+          route: "PO",
+          frequency: "now",
+        },
+        stock: {
+          description: "Acetaminophen 325 mg tablets",
+          strengthMgPerUnit: 325,
+          unitLabel: "tablet",
+        },
+        unitKind: "tablets",
+        maxVisualUnits: 8,
+        tabletStep: 0.5,
+        toleranceUnits: 0,
+      },
+      // 2: liquid, mg/kg
+      {
+        id: 2,
+        type: "liquid",
+        patient: { name: "Emily Perez", age: 8, weightKg: 24 },
+        order: {
+          drug: "Morphine",
+          doseMgPerKg: 0.1,
+          route: "IV",
+          frequency: "now",
+        },
+        stock: {
+          description: "Morphine 10 mg/mL vial",
+          strengthMgPerUnit: 10,
+          unitLabel: "mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 2,
+        tolerancePercent: 5,
+      },
+      // 3: tablets, mg
+      {
+        id: 3,
+        type: "tablet",
+        patient: { name: "Sara Lee", age: 63, weightKg: 70 },
+        order: {
+          drug: "Ibuprofen",
+          doseMg: 400,
+          route: "PO",
+          frequency: "q6h PRN pain",
+        },
+        stock: {
+          description: "Ibuprofen 200 mg tablets",
+          strengthMgPerUnit: 200,
+          unitLabel: "tablet",
+        },
+        unitKind: "tablets",
+        maxVisualUnits: 6,
+        tabletStep: 1,
+        toleranceUnits: 0,
+      },
+      // 4: liquid, mg/kg
+      {
+        id: 4,
+        type: "liquid",
+        patient: { name: "Noah Davis", age: 2, weightKg: 12 },
+        order: {
+          drug: "Amoxicillin",
+          doseMgPerKg: 25,
+          route: "PO",
+          frequency: "q12h",
+        },
+        stock: {
+          description: "Amoxicillin 250 mg/5 mL suspension",
+          strengthMgPerUnit: 50, // 250 mg / 5 mL
+          unitLabel: "mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 10,
+        tolerancePercent: 5,
+      },
+      // 5: tablets, mcg -> mg
+      {
+        id: 5,
+        type: "tablet",
+        patient: { name: "Olivia Grant", age: 55, weightKg: 68 },
+        order: {
+          drug: "Levothyroxine",
+          doseMcg: 75, // 75 mcg
+          route: "PO",
+          frequency: "once daily",
+        },
+        stock: {
+          description: "Levothyroxine 25 mcg tablets",
+          strengthMgPerUnit: 0.025, // 25 mcg = 0.025 mg
+          unitLabel: "tablet",
+          displayStrength: "25 mcg per tablet",
+        },
+        unitKind: "tablets",
+        maxVisualUnits: 5,
+        tabletStep: 0.5,
+        toleranceUnits: 0,
+      },
+      // 6: liquid, mcg (no weight)
+      {
+        id: 6,
+        type: "liquid",
+        patient: { name: "Michael King", age: 60, weightKg: 90 },
+        order: {
+          drug: "Fentanyl",
+          doseMcg: 25, // 25 mcg
+          route: "IV",
+          frequency: "once",
+        },
+        stock: {
+          description: "Fentanyl 50 mcg/mL",
+          strengthMgPerUnit: 0.05, // 50 mcg = 0.05 mg per mL
+          unitLabel: "mL",
+          displayStrength: "50 mcg/mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 1,
+        tolerancePercent: 5,
+      },
+      // 7: liquid, mg (no weight), answer < 1 mL
+      {
+        id: 7,
+        type: "liquid",
+        patient: { name: "Grace Turner", age: 34, weightKg: 60 },
+        order: {
+          drug: "Lorazepam",
+          doseMg: 0.5,
+          route: "PO",
+          frequency: "once",
+        },
+        stock: {
+          description: "Lorazepam 2 mg/mL oral solution",
+          strengthMgPerUnit: 2,
+          unitLabel: "mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 1,
+        tolerancePercent: 5,
+      },
+      // 8: tablets, mg
+      {
+        id: 8,
+        type: "tablet",
+        patient: { name: "Henry Adams", age: 50, weightKg: 78 },
+        order: {
+          drug: "Prednisone",
+          doseMg: 15,
+          route: "PO",
+          frequency: "once daily",
+        },
+        stock: {
+          description: "Prednisone 5 mg tablets",
+          strengthMgPerUnit: 5,
+          unitLabel: "tablet",
+        },
+        unitKind: "tablets",
+        maxVisualUnits: 6,
+        tabletStep: 1,
+        toleranceUnits: 0,
+      },
+      // 9: liquid, mg/kg
+      {
+        id: 9,
+        type: "liquid",
+        patient: { name: "Ethan Bell", age: 10, weightKg: 16 },
+        order: {
+          drug: "Gentamicin",
+          doseMgPerKg: 2.5,
+          route: "IM",
+          frequency: "once",
+        },
+        stock: {
+          description: "Gentamicin 40 mg/mL",
+          strengthMgPerUnit: 40,
+          unitLabel: "mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 3,
+        tolerancePercent: 5,
+      },
+      // 10: tablets, mg, half-tablet
+      {
+        id: 10,
+        type: "tablet",
+        patient: { name: "Patricia Cole", age: 72, weightKg: 70 },
+        order: {
+          drug: "Warfarin",
+          doseMg: 7.5,
+          route: "PO",
+          frequency: "once daily",
+        },
+        stock: {
+          description: "Warfarin 5 mg tablets",
+          strengthMgPerUnit: 5,
+          unitLabel: "tablet",
+        },
+        unitKind: "tablets",
+        maxVisualUnits: 4,
+        tabletStep: 0.5,
+        toleranceUnits: 0,
+      },
+      // 11: liquid, mcg/kg
+      {
+        id: 11,
+        type: "liquid",
+        patient: { name: "Ava Wilson", age: 1, weightKg: 7 },
+        order: {
+          drug: "Digoxin",
+          doseMcgPerKg: 10, // 10 mcg/kg
+          route: "PO",
+          frequency: "once",
+        },
+        stock: {
+          description: "Digoxin solution 0.05 mg/mL (50 mcg/mL)",
+          strengthMgPerUnit: 0.05, // 0.05 mg per mL
+          unitLabel: "mL",
+          displayStrength: "0.05 mg/mL (50 mcg/mL)",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 3,
+        tolerancePercent: 5,
+      },
+      // 12: liquid, mg (no weight)
+      {
+        id: 12,
+        type: "liquid",
+        patient: { name: "Ryan Parker", age: 40, weightKg: 82 },
+        order: {
+          drug: "Ondansetron",
+          doseMg: 4,
+          route: "IV",
+          frequency: "q8h PRN",
+        },
+        stock: {
+          description: "Ondansetron 2 mg/mL",
+          strengthMgPerUnit: 2,
+          unitLabel: "mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 4,
+        tolerancePercent: 5,
+      },
+      // 13: tablets, mg, half-tablet
+      {
+        id: 13,
+        type: "tablet",
+        patient: { name: "Jacob Reed", age: 58, weightKg: 85 },
+        order: {
+          drug: "Metoprolol tartrate",
+          doseMg: 37.5,
+          route: "PO",
+          frequency: "BID",
+        },
+        stock: {
+          description: "Metoprolol 25 mg tablets",
+          strengthMgPerUnit: 25,
+          unitLabel: "tablet",
+        },
+        unitKind: "tablets",
+        maxVisualUnits: 4,
+        tabletStep: 0.5,
+        toleranceUnits: 0,
+      },
+      // 14: liquid, mg (no weight)
+      {
+        id: 14,
+        type: "liquid",
+        patient: { name: "Liam Carter", age: 30, weightKg: 75 },
+        order: {
+          drug: "Midazolam",
+          doseMg: 1,
+          route: "IV",
+          frequency: "once",
+        },
+        stock: {
+          description: "Midazolam 1 mg/mL",
+          strengthMgPerUnit: 1,
+          unitLabel: "mL",
+        },
+        unitKind: "mL",
+        maxVisualUnits: 3,
+        tolerancePercent: 5,
+      },
+    ];
+
+    // -----------------------------
+    // State
+    // -----------------------------
+    let currentIndex = 0;
+    let score = 0;
+    let questionsAnswered = 0;
+    let questionsCorrect = 0;
+    let canAnswer = true;
+
+    // For visuals
+    let selectedTablets = 0;
+    let selectedMl = 0;
+
+    // DOM references
+    const patientNameEl = document.getElementById("patientName");
+    const patientMetaEl = document.getElementById("patientMeta");
+    const orderMainEl = document.getElementById("orderMain");
+    const orderMetaEl = document.getElementById("orderMeta");
+    const stockDescEl = document.getElementById("stockDesc");
+    const stockSubEl = document.getElementById("stockSub");
+    const questionIndexPill = document.getElementById("questionIndexPill");
+
+    const doseInputEl = document.getElementById("doseInput");
+    const calcUnitLabelEl = document.getElementById("calcUnitLabel");
+    const visualContainerEl = document.getElementById("visualContainer");
+    const feedbackEl = document.getElementById("feedback");
+    const scoreValueEl = document.getElementById("scoreValue");
+    const accuracyValueEl = document.getElementById("accuracyValue");
+
+    const submitBtn = document.getElementById("submitBtn");
+    const showAnswerBtn = document.getElementById("showAnswerBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function roundTo(value, decimals = 2) {
+      const factor = Math.pow(10, decimals);
+      return Math.round(value * factor) / factor;
+    }
+
+    function getRequiredUnits(problem) {
+      let mgOrder;
+      const o = problem.order;
+      const wt = problem.patient.weightKg;
+
+      if (o.doseMgPerKg != null) {
+        mgOrder = o.doseMgPerKg * wt;
+      } else if (o.doseMcgPerKg != null) {
+        const totalMcg = o.doseMcgPerKg * wt;
+        mgOrder = totalMcg / 1000; // convert mcg to mg
+      } else if (o.doseMcg != null) {
+        mgOrder = o.doseMcg / 1000; // mcg to mg
+      } else {
+        mgOrder = o.doseMg;
+      }
+
+      const units = mgOrder / problem.stock.strengthMgPerUnit;
+      return { mgOrder, units };
+    }
+
+    function acceptableTolerance(problem, correctUnits) {
+      if (problem.type === "tablet") {
+        return problem.toleranceUnits ?? 0;
+      }
+      const percent = problem.tolerancePercent ?? 5;
+      return (percent / 100) * correctUnits;
+    }
+
+    function resetFeedback() {
+      feedbackEl.style.display = "none";
+      feedbackEl.className = "feedback";
+      feedbackEl.textContent = "";
+    }
+
+    function updateScoreDisplays() {
+      scoreValueEl.textContent = score;
+      const acc =
+        questionsAnswered === 0
+          ? 0
+          : Math.round((questionsCorrect / questionsAnswered) * 100);
+      accuracyValueEl.textContent = `Accuracy: ${acc}%`;
+    }
+
+    // -----------------------------
+    // UI builders
+    // -----------------------------
+    function renderProblem(index) {
+      const problem = problems[index];
+      currentIndex = index;
+      canAnswer = true;
+      resetFeedback();
+      doseInputEl.value = "";
+      nextBtn.disabled = true;
+
+      const { mgOrder, units } = getRequiredUnits(problem);
+
+      // Patient
+      patientNameEl.textContent = problem.patient.name;
+      const ageStr = problem.patient.age ? `${problem.patient.age} yrs` : "";
+      const wtStr =
+        problem.patient.weightKg != null
+          ? `${problem.patient.weightKg} kg`
+          : "";
+      patientMetaEl.textContent = [ageStr, wtStr].filter(Boolean).join(" • ");
+
+      // Order text (mg, mcg, mg/kg, mcg/kg)
+      const o = problem.order;
+      let orderMain;
+      if (o.doseMgPerKg != null) {
+        orderMain = `${o.drug} ${o.doseMgPerKg} mg/kg ${o.route}`;
+      } else if (o.doseMcgPerKg != null) {
+        orderMain = `${o.drug} ${o.doseMcgPerKg} mcg/kg ${o.route}`;
+      } else if (o.doseMcg != null) {
+        orderMain = `${o.drug} ${o.doseMcg} mcg ${o.route}`;
+      } else {
+        orderMain = `${o.drug} ${o.doseMg} mg ${o.route}`;
+      }
+      orderMainEl.textContent = orderMain;
+
+      orderMetaEl.textContent = o.frequency || "";
+
+      // Stock
+      stockDescEl.textContent = problem.stock.description;
+      if (problem.stock.displayStrength) {
+        stockSubEl.textContent = `Strength: ${problem.stock.displayStrength}`;
+      } else {
+        stockSubEl.textContent = `Strength: ${
+          problem.stock.strengthMgPerUnit
+        } mg per ${problem.stock.unitLabel}`;
+      }
+
+      // Question index
+      questionIndexPill.textContent = `Question ${index + 1} of ${
+        problems.length
+      }`;
+
+      // Calc label
+      calcUnitLabelEl.textContent =
+        problem.unitKind === "tablets" ? "(in tablets)" : "(in mL)";
+
+      // Visual
+      renderVisual(problem);
+    }
+
+    function renderVisual(problem) {
+      visualContainerEl.innerHTML = "";
+      selectedTablets = 0;
+      selectedMl = 0;
+
+      if (problem.type === "tablet") {
+        const wrapper = document.createElement("div");
+        wrapper.className = "tablet-visual";
+
+        const label = document.createElement("div");
+        label.className = "tray-label";
+        label.textContent = "Count out the tablets for this dose:";
+        wrapper.appendChild(label);
+
+        const tray = document.createElement("div");
+        tray.className = "tablet-tray";
+        tray.id = "tabletTray";
+        wrapper.appendChild(tray);
+
+        const controls = document.createElement("div");
+        controls.className = "tray-controls";
+
+        const pillCounter = document.createElement("div");
+        pillCounter.className = "pill-counter";
+        pillCounter.id = "pillCounter";
+        pillCounter.textContent = "Selected: 0 tablets";
+        controls.appendChild(pillCounter);
+
+        const stepper = document.createElement("div");
+        stepper.className = "pill-stepper";
+
+        const minusBtn = document.createElement("button");
+        minusBtn.type = "button";
+        minusBtn.className = "btn-ghost";
+        minusBtn.textContent = "−";
+        minusBtn.addEventListener("click", () => {
+          const step = problem.tabletStep ?? 1;
+          selectedTablets = Math.max(0, roundTo(selectedTablets - step, 2));
+          updateTabletTray(problem);
+        });
+
+        const plusBtn = document.createElement("button");
+        plusBtn.type = "button";
+        plusBtn.className = "btn-ghost";
+        plusBtn.textContent = "+";
+        plusBtn.addEventListener("click", () => {
+          const step = problem.tabletStep ?? 1;
+          const max = problem.maxVisualUnits ?? 12;
+          selectedTablets = Math.min(
+            max,
+            roundTo(selectedTablets + step, 2)
+          );
+          updateTabletTray(problem);
+        });
+
+        stepper.appendChild(minusBtn);
+        stepper.appendChild(plusBtn);
+        controls.appendChild(stepper);
+
+        wrapper.appendChild(controls);
+        visualContainerEl.appendChild(wrapper);
+
+        updateTabletTray(problem);
+      } else if (problem.type === "liquid") {
+        const wrap = document.createElement("div");
+        wrap.className = "syringe-wrap";
+
+        const label = document.createElement("div");
+        label.className = "tray-label";
+        label.textContent =
+          "Pull back the plunger to draw up the correct mL:";
+        wrap.appendChild(label);
+
+        const syringeRow = document.createElement("div");
+        syringeRow.className = "syringe-row";
+
+        const syringeBody = document.createElement("div");
+        syringeBody.className = "syringe-body";
+
+        const liquid = document.createElement("div");
+        liquid.className = "syringe-liquid";
+        liquid.id = "syringeLiquid";
+        liquid.style.width = "0%";
+        syringeBody.appendChild(liquid);
+
+        const ticks = document.createElement("div");
+        ticks.className = "syringe-ticks";
+        const maxMl = problem.maxVisualUnits ?? 5;
+        const tickCount = Math.min(maxMl * 2, 10);
+        for (let i = 0; i <= tickCount; i++) {
+          const tick = document.createElement("div");
+          tick.className = "tick";
+          ticks.appendChild(tick);
+        }
+        syringeBody.appendChild(ticks);
+
+        syringeRow.appendChild(syringeBody);
+
+        const readout = document.createElement("div");
+        readout.className = "pill-counter";
+        readout.id = "syringeReadout";
+        readout.textContent = "Selected: 0 mL";
+        syringeRow.appendChild(readout);
+
+        wrap.appendChild(syringeRow);
+
+        const rangeRow = document.createElement("div");
+        rangeRow.className = "range-row";
+        const range = document.createElement("input");
+        range.type = "range";
+        range.min = "0";
+        range.max = String(maxMl);
+
+        // Decide step based on correct answer: hundredths if < 1 mL
+        const { units } = getRequiredUnits(problem);
+        const stepValue = units < 1 ? 0.01 : 0.1;
+        range.step = stepValue.toString();
+
+        range.value = "0";
+        range.id = "syringeRange";
+
+        range.addEventListener("input", () => {
+          selectedMl = parseFloat(range.value) || 0;
+          updateSyringe(problem);
+        });
+
+        rangeRow.appendChild(range);
+        wrap.appendChild(rangeRow);
+
+        const meta = document.createElement("div");
+        meta.className = "syringe-meta";
+        meta.textContent = `Scale: 0 to ${maxMl} mL (step ${stepValue} mL)`;
+        wrap.appendChild(meta);
+
+        visualContainerEl.appendChild(wrap);
+        updateSyringe(problem);
+      }
+    }
+
+    function updateTabletTray(problem) {
+      const tray = document.getElementById("tabletTray");
+      const counter = document.getElementById("pillCounter");
+      if (!tray || !counter) return;
+
+      tray.innerHTML = "";
+
+      const whole = Math.floor(selectedTablets);
+      const hasHalf = selectedTablets - whole >= 0.5 - 0.001;
+
+      for (let i = 0; i < whole; i++) {
+        const t = document.createElement("div");
+        t.className = "tablet";
+        tray.appendChild(t);
+      }
+
+      if (hasHalf) {
+        const t = document.createElement("div");
+        t.className = "tablet";
+        t.style.width = "20px";
+        tray.appendChild(t);
+      }
+
+      const unitLabel =
+        selectedTablets === 1 ? "tablet" : "tablets";
+      counter.textContent = `Selected: ${selectedTablets.toFixed(
+        2
+      )} ${unitLabel}`;
+    }
+
+    function updateSyringe(problem) {
+      const liquid = document.getElementById("syringeLiquid");
+      const readout = document.getElementById("syringeReadout");
+      const max = problem.maxVisualUnits ?? 5;
+      if (!liquid || !readout) return;
+
+      const clamped = Math.max(0, Math.min(max, selectedMl));
+      const pct = (clamped / max) * 100;
+      liquid.style.width = `${pct}%`;
+      readout.textContent = `Selected: ${clamped.toFixed(2)} mL`;
+    }
+
+    // -----------------------------
+    // Answer checking
+    // -----------------------------
+    function checkAnswer() {
+      if (!canAnswer) return;
+
+      const problem = problems[currentIndex];
+      const { units: correctUnitsRaw } = getRequiredUnits(problem);
+      const correctUnits = roundTo(correctUnitsRaw, 2);
+      const tolerance = acceptableTolerance(problem, correctUnits);
+
+      const userText = doseInputEl.value.trim();
+      const userCalc = parseFloat(userText);
+
+      if (isNaN(userCalc)) {
+        showFeedback(
+          "Please enter your calculated dose before administering.",
+          "error"
+        );
+        return;
+      }
+
+      let userVisual;
+      if (problem.type === "tablet") {
+        userVisual = selectedTablets;
+        const diffCv = Math.abs(userCalc - userVisual);
+        if (diffCv > 0.05) {
+          showFeedback(
+            "Your written calculation and the number of tablets you counted out do not match. Make sure they agree before administering.",
+            "error"
+          );
+          return;
+        }
+      } else {
+        userVisual = selectedMl;
+        const diffCv = Math.abs(userCalc - userVisual);
+        if (diffCv > 0.05) {
+          showFeedback(
+            "Your written calculation and the volume in the syringe do not match. Make sure they agree before administering.",
+            "error"
+          );
+          return;
+        }
+      }
+
+      const diff = Math.abs(userCalc - correctUnits);
+
+      let category;
+      if (diff <= tolerance) {
+        category = "correct";
+      } else if (diff <= tolerance * 2 || diff <= 0.1) {
+        category = "partial";
+      } else {
+        category = "error";
+      }
+
+      questionsAnswered++;
+      let feedbackText = "";
+
+      const unitWord =
+        problem.unitKind === "tablets" ? "tablets" : "mL";
+
+      if (category === "correct") {
+        score += 10;
+        questionsCorrect++;
+        feedbackText = `✅ Correct! Ordered dose corresponds to ${correctUnits.toFixed(
+          2
+        )} ${unitWord}. Nice work.`;
+      } else if (category === "partial") {
+        score += 4;
+        feedbackText = `⚠ Almost. You chose ${userCalc.toFixed(
+          2
+        )} ${unitWord}, but the correct dose is ${correctUnits.toFixed(
+          2
+        )} ${unitWord}. This would be a small error in practice—always double-check.`;
+      } else {
+        feedbackText = `🚫 Not safe. You chose ${userCalc.toFixed(
+          2
+        )} ${unitWord}, but the correct dose is ${correctUnits.toFixed(
+          2
+        )} ${unitWord}. In real practice, this could lead to an error—always recheck ordered dose, medication strength, and calculation.`;
+      }
+
+      showFeedback(feedbackText, category);
+      updateScoreDisplays();
+      canAnswer = false;
+      nextBtn.disabled = false;
+    }
+
+    function showFeedback(text, category) {
+      feedbackEl.style.display = "block";
+      feedbackEl.textContent = text;
+      feedbackEl.className = "feedback";
+      if (category === "correct") feedbackEl.classList.add("correct");
+      else if (category === "partial")
+        feedbackEl.classList.add("partial");
+      else if (category === "error") feedbackEl.classList.add("error");
+    }
+
+    function showCorrectAnswer() {
+      const problem = problems[currentIndex];
+      const { mgOrder, units } = getRequiredUnits(problem);
+      const roundedUnits = roundTo(units, 2);
+      const unitWord =
+        problem.unitKind === "tablets" ? "tablets" : "mL";
+
+      const o = problem.order;
+      let mgText;
+
+      if (o.doseMgPerKg != null) {
+        mgText = `${o.doseMgPerKg} mg/kg × ${
+          problem.patient.weightKg
+        } kg = ${roundTo(mgOrder, 2)} mg`;
+      } else if (o.doseMcgPerKg != null) {
+        const totalMcg = o.doseMcgPerKg * problem.patient.weightKg;
+        mgText = `${o.doseMcgPerKg} mcg/kg × ${
+          problem.patient.weightKg
+        } kg = ${totalMcg} mcg = ${roundTo(mgOrder, 3)} mg`;
+      } else if (o.doseMcg != null) {
+        const totalMcg = o.doseMcg;
+        mgText = `${totalMcg} mcg ordered = ${roundTo(
+          mgOrder,
+          3
+        )} mg`;
+      } else {
+        mgText = `${mgOrder} mg ordered`;
+      }
+
+      const explanation =
+        `Correct dose:\n${mgText}\n` +
+        `Strength: ${
+          problem.stock.displayStrength
+            ? problem.stock.displayStrength
+            : `${problem.stock.strengthMgPerUnit} mg per ${problem.stock.unitLabel}`
+        }\n` +
+        `Dose to give: ${roundTo(mgOrder, 3)} mg ÷ ${
+          problem.stock.strengthMgPerUnit
+        } mg/${problem.stock.unitLabel} = ${roundedUnits} ${unitWord}.`;
+
+      showFeedback(explanation, "partial");
+    }
+
+    function nextQuestion() {
+      const nextIndex = (currentIndex + 1) % problems.length;
+      renderProblem(nextIndex);
+    }
+
+    // -----------------------------
+    // Event wiring
+    // -----------------------------
+    submitBtn.addEventListener("click", checkAnswer);
+    showAnswerBtn.addEventListener("click", showCorrectAnswer);
+    nextBtn.addEventListener("click", nextQuestion);
+
+    // Initialize
+    renderProblem(0);
+    updateScoreDisplays();
+  </script>
+</body>
+</html>
